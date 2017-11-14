@@ -6,7 +6,7 @@ from sympy import *
 #One is in input layer which getOutput is constant
 #The other is in hidden layer which getOutput is var
 class Neuron:
-	def __init__(self,weights=[],bias=[],value=-2):
+	def __init__(self,weights=[],bias=0,value=-2):
 		self.weights=weights
 		self.bias=bias
 		self.value=value
@@ -30,9 +30,9 @@ class Neuron:
 		return inputSum
 	def display(self):
 		if self.weights == []:
-			print('Neuron in Input layer,value=%f'%(self.value))
+			print('Input,value=%f'%(self.value))
 		else:
-			print('Neuron in hidden layer,weights=%s,bias=%f'%(self.weights,self.bias))
+			print('Hidden,weights=%s,bias=%.2f,value=%.2f'%(self.weights,self.bias,self.value))
 		return
 class NeuronLayer:
 	def __init__(self,neurons=[]):
@@ -46,7 +46,7 @@ class NeuronLayer:
 class NeuralNetwork:
 	inputLayer=[]
 	hiddenLayers=[]
-	outputNeuron=Neuron([],[])
+	outputNeuron=Neuron([],0)
 	def __init__(self,layerSize,activateFunction,updateRate,trainData):
 		#layerSize [1,2] means first layer has one neuron,second layer has two neuron
 		self.layerSize = layerSize
@@ -57,13 +57,13 @@ class NeuralNetwork:
 		for i in range(len(self.layerSize)):
 			tmpNS = []
 			for j in range(self.layerSize[i]):
-				tmpNS.append(Neuron([],[]))
+				tmpNS.append(Neuron([],0))
 			self.hiddenLayers.append(NeuronLayer(tmpNS))
 	#good
 	def calculateInputLayer(self,index):
 		tmpNS=[];
 		for i in range(len(self.trainData[index])-1):
-			tmpNS.append(Neuron([],[],self.trainData[index][i]))
+			tmpNS.append(Neuron([],0,self.trainData[index][i]))
 		self.inputLayer=NeuronLayer(tmpNS)
 	def calculateHiddenLayers(self):
 		for i in range(len(self.layerSize)):
@@ -73,22 +73,24 @@ class NeuralNetwork:
 				upperLayer=self.hiddenLayers[i-1]
 			for j in range(self.layerSize[i]):
 				tmpNS = self.hiddenLayers[i].neurons[j]			
-				#init weights
+				#init weights and bias
 				if tmpNS.weights==[]:
-					tmpNS.weights=[1/len(upperLayer.neurons) for x in len(upperLayer.neurons)]
+					tmpNS.weights=[1/len(upperLayer.neurons) for x in range(len(upperLayer.neurons))]
+					tmpNS.bias=0
 				inputSum = tmpNS.getInputSum(upperLayer)
 				tmpNS.updateValue(inputSum,self.activateFunction)
-	def calculateOutputNeuron():
+	def calculateOutputNeuron(self):
 		upperLayer = self.hiddenLayers[-1]
-		#init weights
+		#init weights and bias
 		if self.outputNeuron.weights==[]:
-			self.outputNeuron.weights=[1/len(upperLayer.neurons) for x in len(upperLayer.neurons)]
+			self.outputNeuron.weights=[1/len(upperLayer.neurons) for x in range(len(upperLayer.neurons))]
+			self.outputNeuron.bias = 0
 		inputSum = self.outputNeuron.getInputSum(upperLayer)
 		self.outputNeuron.updateValue(inputSum,self.activateFunction)
 	def getOutput(self,index):
-		calculateInputLayer(index)
-		calculateHiddenLayers()
-		calculateOutputNeuron()
+		self.calculateInputLayer(index)
+		self.calculateHiddenLayers()
+		self.calculateOutputNeuron()
 		return self.outputNeuron.value		
 		
 
