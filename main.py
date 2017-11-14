@@ -6,7 +6,7 @@ rate=1
 x=Symbol('x')
 activateFunction=1/(1+rate*math.e**(-x))
 updateRate=1
-trainData=[[1,1,1,1,1,2],]
+trainData=[[0.3,0.2,0.5,0.2,0.3,0.5],]
 nw = NeuralNetwork(layerSize,activateFunction,updateRate,trainData)
 out1 = nw.getOutput(0)
-print(out1)
+nw.display()
